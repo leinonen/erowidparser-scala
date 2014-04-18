@@ -8,8 +8,6 @@ import se.leinonen.parser.pagemodel.{DrugPage, Page}
  */
 object Main extends App {
 
-  val drug = Drug.find(1)
-
   val parser: ErowidParser = new ErowidParser
 
   val root: Page = parser parse "http://www.erowid.org/general/big_chart.shtml"
