@@ -14,6 +14,7 @@ object UrlType extends Enumeration {
 class ErowidUrl(urlParam:String) extends Ordered[ErowidUrl] {
   val url = urlParam
   var typ : UrlType = UrlType.Unknown
+  var base: String = null
   def this(urlParam:String, typParam:UrlType) = {
     this(urlParam); typ = typParam
   }

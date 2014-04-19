@@ -4,7 +4,7 @@
     <facet type="scala" name="Scala">
       <configuration>
         <option name="compilerLibraryLevel" value="Project" />
-        <option name="compilerLibraryName" value="SBT:: scala-compiler:2.10.2" />
+        <option name="compilerLibraryName" value="SBT:: scala-compiler-bundle:2.10.2" />
       </configuration>
     </facet>
   </component>

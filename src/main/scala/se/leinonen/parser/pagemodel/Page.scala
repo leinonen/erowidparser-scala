@@ -12,22 +12,23 @@ import org.jsoup.Jsoup
  */
 class Page(url: String, document: Document) {
 
+  val pageUrl = url
   val doc = document
 
   def title = doc.title()
 
-  def text(query:String) : String = {
-    val x = for(e <- doc.select(query).iterator().asScala) yield Jsoup.parse(e.html()).text()
+  def parseText(query: String): String = {
+    val x = for (e <- doc.select(query).iterator().asScala) yield Jsoup.parse(e.html()).text()
     x.mkString("\n")
   }
 
-  def image(query:String) : String = {
-    val x = for(e <- doc.select(query).iterator().asScala) yield e.attr("src")
+  def parseImage(query: String): String = {
+    val x = for (e <- doc.select(query).iterator().asScala) yield e.attr("src")
     x.mkString
   }
 
-  def list(query:String) : List[String] = {
-    val x = for(e <- doc.select(query).iterator().asScala) yield Jsoup.parse(e.html()).text()
+  def parseList(query: String): List[String] = {
+    val x = for (e <- doc.select(query).iterator().asScala) yield Jsoup.parse(e.html()).text()
     x.toList
   }
 
@@ -37,16 +38,21 @@ class Page(url: String, document: Document) {
         UrlType.Basics
       } else if (url.endsWith("effects.shtml")) {
         UrlType.Effects
-      } else {
+      } else if (url.endsWith(".shtml")) {
         UrlType.Drug
+      } else {
+        UrlType.Unknown
       }
     }
-    val links = for (e <- doc.select("a").iterator().asScala) yield e.attr("href")
-    val urls = for (url <- links.filter(x => (isValidUrlPattern(x) && notBlackListed(x)))) yield {
-      new ErowidUrl("http://www.erowid.org" + url, getType(url))
+    val hrefs = for (e <- doc.select("a").iterator().asScala) yield e.attr("href")
+
+    val urls = for (url <- hrefs.filter(x => isValidUrlPattern(x))) yield {
+      new ErowidUrl(getCorrectBaseFor(url) + url, getType(url))
     }
     urls
   }
+
+  def drugLinks:List[ErowidUrl] = links.filter(u => (notBlackListed(u.url) && u.typ == UrlType.Drug)).toList
 
   private def notBlackListed(str: String): Boolean = {
     val blacklist = Array("images", "dose", "cultivation1", "writings", "law",
@@ -61,7 +67,15 @@ class Page(url: String, document: Document) {
     true
   }
 
+  private def getCorrectBaseFor(url:String) : String = {
+    if (isRelative(url)) pageUrl.substring(0, pageUrl.lastIndexOf("/") + 1) 
+    else "http://www.erowid.org"
+  }
+
+  private def isRelative(url: String): Boolean = !url.startsWith("/") && url.endsWith(".shtml")
+
   private def isValidUrlPattern(url: String): Boolean = {
-    url.startsWith("/plants") || url.startsWith("/herbs") || url.startsWith("/chemicals") || url.startsWith("/smarts")
+    isRelative(url) ||
+      url.startsWith("/plants") || url.startsWith("/herbs") || url.startsWith("/chemicals") || url.startsWith("/smarts")
   }
 }
