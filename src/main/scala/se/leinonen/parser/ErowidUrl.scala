@@ -19,5 +19,6 @@ class ErowidUrl(urlParam:String) extends Ordered[ErowidUrl] {
     this(urlParam); typ = typParam
   }
 
+  override def hashCode = this.url.hashCode
   override def compare(that: ErowidUrl): Int = this.url.compareTo(that.url)
 }

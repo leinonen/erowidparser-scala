@@ -1,6 +1,6 @@
 package se.leinonen.parser.pagemodel
 
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Element, Document}
 import scala.collection.JavaConverters._
 import se.leinonen.parser.ErowidUrl
 import se.leinonen.parser.UrlType.UrlType
@@ -32,7 +32,7 @@ class Page(url: String, document: Document) {
     x.toList
   }
 
-  def links: Iterator[ErowidUrl] = {
+  def links: List[ErowidUrl] = {
     def getType(url: String): UrlType = {
       if (url.endsWith("basics.shtml")) {
         UrlType.Basics
@@ -44,7 +44,13 @@ class Page(url: String, document: Document) {
         UrlType.Unknown
       }
     }
-    val hrefs = for (e <- doc.select("a").iterator().asScala) yield e.attr("href")
+
+    // This is not the way to do it!
+    //val hrefs = for (e <- doc.select("a").iterator().asScala) yield e.attr("href")
+
+    lazy val hrefs : List[String] = doc.select("a").iterator().asScala.collect {
+      case s: Element => s.attr("href")
+    }.toList.distinct.sorted
 
     val urls = for (url <- hrefs.filter(x => isValidUrlPattern(x))) yield {
       new ErowidUrl(getCorrectBaseFor(url) + url, getType(url))
@@ -52,7 +58,7 @@ class Page(url: String, document: Document) {
     urls
   }
 
-  def drugLinks:List[ErowidUrl] = links.filter(u => (notBlackListed(u.url) && u.typ == UrlType.Drug)).toList
+  def drugLinks:List[ErowidUrl] = links.filter(u => (notBlackListed(u.url) && u.typ == UrlType.Drug))
 
   private def notBlackListed(str: String): Boolean = {
     val blacklist = Array("images", "dose", "cultivation1", "writings", "law",
@@ -78,4 +84,7 @@ class Page(url: String, document: Document) {
     isRelative(url) ||
       url.startsWith("/plants") || url.startsWith("/herbs") || url.startsWith("/chemicals") || url.startsWith("/smarts")
   }
+
+  override def toString() = title
+
 }

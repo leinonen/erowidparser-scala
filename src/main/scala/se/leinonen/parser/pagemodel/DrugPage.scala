@@ -21,6 +21,10 @@ class DrugPage(url:String, doc:Document) extends Page(url, doc){
   def toDrug: Drug = {
     val drug: Drug = new Drug
     drug.name = substanceName
+    drug.description = description
+    drug.chemicalName = chemicalName
+    drug.url = url
+    drug.imageUrl = parseImage("div.summary-card-topic-image img")
     drug
   }
 }
