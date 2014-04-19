@@ -5,6 +5,7 @@ import se.leinonen.parser.model.Drug
 import se.leinonen.parser.{ErowidUrl, UrlType}
 
 /**
+ * Drug Page Parser. Handles everything related to a drug page.
  * Created by leinonen on 2014-04-18.
  */
 class DrugPage(url:String, doc:Document) extends Page(url, doc){

@@ -8,6 +8,7 @@ import se.leinonen.parser.UrlType
 import org.jsoup.Jsoup
 
 /**
+ * Generic Erowid Page Parser. Handles all generic page stuff.
  * Created by leinonen on 2014-04-18.
  */
 class Page(url: String, document: Document) {
@@ -45,7 +46,7 @@ class Page(url: String, document: Document) {
       }
     }
 
-    // This is not the way to do it!
+    // This is not the way to do it! Duplicates!
     //val hrefs = for (e <- doc.select("a").iterator().asScala) yield e.attr("href")
 
     lazy val hrefs : List[String] = doc.select("a").iterator().asScala.collect {

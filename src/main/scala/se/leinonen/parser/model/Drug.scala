@@ -39,7 +39,7 @@ class Drug {
 }
 
 /**
- * Person Data Access Object.
+ * Drug Data Access Object.
  */
 object Drug extends Dao(classOf[Drug]){
 
